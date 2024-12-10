@@ -36,7 +36,7 @@ A Python script that:
 -m, --model: Model for simulation, either BM (Brownian Motion) or OUrandomRoot (default: BM).
 ```
 
-Output Files
+**Output Files**
 * <trait_name>.single_values.csv: Observed trait values with z-scores.
 * <trait_name>.simulations.csv: Simulated trait values.
 * <trait_name>.simulations.zscore.csv: Z-scores of simulated values.
@@ -44,7 +44,7 @@ Output Files
 * <trait_name>.outliers.tab: Outliers based on nyu95 threshold.
 * <trait_name>.nyu95.txt: Overall nyu95 score.
 
-Installation and Dependencies
+**Installation and Dependencies**
 * Python (≥3.7)
 * Required libraries: pandas, dendropy
 * R (≥4.0)
