@@ -1,4 +1,4 @@
-# Nyu
+# The Nyu Test
 
 ## A Bootstrap-based Test for Interspecific Phenotype Shifts in Phylogenetic Data
 
