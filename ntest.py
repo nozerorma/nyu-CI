@@ -168,7 +168,7 @@ print("Starting session on", trait, "from", database_path, "database with", tree
 #@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@
 
 #   [TRAITS TABLE] Import the traits table
-db = pd.read_csv(database_path, sep='\t', header=0, index_col="SpeciesBROAD")
+db = pd.read_csv(database_path, sep=',', header=0, index_col="species")
 
 #   [PHYLOGENY] Import the tree
 tree = dendropy.Tree.get(
@@ -224,7 +224,7 @@ trait_db["zvalues"] = (trait_db[trait] - obs_mean) / obs_std
 
 # Esporta il DataFrame come file CSV                                                                            [!!!OUTPUT] 
 trait_obs_values = output_tag + ".single_values.csv"
-trait_db.to_csv(trait_obs_values, sep='\t', index=True)                                                              
+trait_db.to_csv(trait_obs_values, sep=',', index=True)
 
 #@ Step 3: Calculate combined values and create the output database
 #@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@
@@ -264,7 +264,7 @@ command = f"Rscript simulate.r -d {trait_obs_values} -t {tree_path} -o {outfolde
 os.system(command)
 
 simulations_path = "/".join([output_tag + ".simulations.csv"])
-simulations = pd.read_csv(simulations_path, sep=',', header=0, index_col="SpeciesBROAD")
+simulations = pd.read_csv(simulations_path, sep=',', header=0, index_col="species")
 
 #   Conversion to z-values of the simulated values
 
@@ -274,7 +274,7 @@ simulations_z = simulations.apply(
 )
 
 simulations_z_path = output_tag + ".simulations.zscore.csv"
-simulations_z.to_csv(simulations_z_path, sep='\t', index=True)                                                          
+simulations_z.to_csv(simulations_z_path, sep=',', index=True)                                                          
 
 #@ Step 6: Calculate the modular difference between the simulated values
 #@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@
@@ -316,8 +316,8 @@ results_table = results_table.sort_values(by=["Species1", "Species2"], ascending
 results_table = results_table.reset_index(drop=True)
 
 
-nyu_table = output_tag + ".nyu.tab"
-results_table.to_csv(nyu_table, sep='\t', index=True)                                                          
+nyu_table = output_tag + ".nyu.05.csv"
+results_table.to_csv(nyu_table, sep=',', index=True)                                                          
 
 #@ Step 8: Calculate the trait nyu95
 #@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#@#
@@ -325,25 +325,25 @@ results_table.to_csv(nyu_table, sep='\t', index=True)
 print("Calculating trait-wide nyu95")                      #@@ STDOUT PRINT
 
 outliers = results_table[
-    (results_table["PairWise_NYU"] < 0.025) | (results_table["PairWise_NYU"] > 0.975)
+    (results_table["PairWise_NYU"] < 0.05) | (results_table["PairWise_NYU"] > 0.95)
 ]
 
 tops = results_table[
-    (results_table["PairWise_NYU"] > 0.975)
+    (results_table["PairWise_NYU"] > 0.95)
 ]
 
 bottoms = results_table[
-    (results_table["PairWise_NYU"] < 0.025)
+    (results_table["PairWise_NYU"] < 0.05)
 ]
 
 # Mostra le combinazioni filtrate
-ol_table = output_tag + ".outliers.tab"
-tops_table = output_tag + ".outliers.tops.tab"
-bottoms_table = output_tag + ".outliers.bottoms.tab"
+ol_table = output_tag + ".outliers.05.csv"
+tops_table = output_tag + ".outliers.05.tops.csv"
+bottoms_table = output_tag + ".outliers.05.bottoms.csv"
 
-outliers.to_csv(ol_table, sep='\t', index=True)
-tops.to_csv(tops_table, sep='\t', index=True)
-bottoms.to_csv(bottoms_table, sep='\t', index=True)
+outliers.to_csv(ol_table, sep=',', index=True)
+tops.to_csv(tops_table, sep=',', index=True)
+bottoms.to_csv(bottoms_table, sep=',', index=True)
 
 nyu95 = float(outliers.shape[0])/results_table.shape[0]
 

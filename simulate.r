@@ -27,6 +27,9 @@ option_list <- list(
 opt_parser <- OptionParser(option_list = option_list)
 opt <- parse_args(opt_parser)
 
+# Set seed
+set.seed(1998)
+
 # Assign variables from parsed arguments
 trait_obs_values <- opt$datafile
 trait_pruned_tree <- opt$treefile
@@ -50,19 +53,19 @@ sink(log_file, split = TRUE)  # Redirect output and print to console as well
 cat("Loading trait data from file:", trait_obs_values, "\n")
 traits_df <- read.table(
   trait_obs_values,
-  sep = "\t", header = TRUE,
+  sep = ",", header = TRUE,
   stringsAsFactors = FALSE
 )
 
 # Check if the required columns exist
-if (!all(c(trait_value, "SpeciesBROAD") %in% colnames(traits_df))) {
+if (!all(c(trait_value, "species") %in% colnames(traits_df))) {
   stop("Error: Missing required columns in the trait data file.")
 }
 
 cat("Successfully loaded trait data with", nrow(traits_df), "rows.\n")
 
 # Associate trait values with species
-trait_data <- setNames(traits_df[[trait_value]], traits_df$SpeciesBROAD)
+trait_data <- setNames(traits_df[[trait_value]], traits_df$species)
 
 # Load the pruned tree
 cat("Loading phylogenetic tree from file:", trait_pruned_tree, "\n")
@@ -131,7 +134,7 @@ if (nrow(simulations) != length(pruned_tree$tip.label)) {
 }
 
 # Convert to a data frame with species names as rows and simulations as columns
-simulations_df <- data.frame(SpeciesBROAD = pruned_tree$tip.label, simulations)
+simulations_df <- data.frame(species = pruned_tree$tip.label, simulations)
 
 # Save the simulations to a CSV file named after the trait
 simulations_file <- file.path(output_dir, paste0(trait_value, ".", model_type, ".simulations.csv"))
